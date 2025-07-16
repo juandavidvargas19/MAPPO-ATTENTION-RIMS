@@ -48,7 +48,24 @@ The necessary inputs are as follows:
 
 ## Questions and Answers
 
-## 1. How can I modify the loss functions?
+
+## 1. How can I modify the architecture of the Actor and the Critic?
+
+There are 4 key components to the architecture: 
+
+### 1. **r_mappo.py** - Training Algorithm
+Implements the PPO training algorithm with loss computation, gradient updates, and entropy annealing. Controls the entire training loop and optimization process.
+
+### 2. **rMAPPOPolicy.py** - Policy Interface  
+Wraps the actor and critic networks, manages their optimizers, and provides unified methods for action selection and evaluation. Acts as the bridge between training and networks.
+
+### 3. **r_actor_critic.py** - Network Architectures
+Contains the actual neural network definitions for both actor and critic, including base feature extractors, attention mechanisms (RIM/SCOFF), and output layers.
+
+### 4. **rnn.py / rim_cell.py** - Recurrent/Attention Modules
+Implements the core computational units (GRU/LSTM in rnn.py or RIM attention mechanisms in rim_cell.py) that process sequential information within the actor and critic networks.
+
+## 2. How can I modify the loss functions?
 
 The loss functions can be found in onpolicy/algorithms/r_mappo/r_mappo.py.
 
@@ -94,7 +111,7 @@ total_critic_loss = (value_loss * self.value_loss_coef)
 
 **Key Difference:** Actor and critic are trained separately with their own optimizers, not jointly.
 
-## 2. How can I debug RIMs?
+## 3. How can I debug RIMs?
 
 
 ### Debug Location
@@ -124,7 +141,7 @@ RIMs are modular recurrent units that:
 The key insight: RIMs learn to specialize on different environmental factors, leading to better generalization when only some factors change between training and evaluation.
 
 
-## 3. How can I debug the baseline LSTM?
+## 4. How can I debug the baseline LSTM?
 
 ### Debug Location
 - **Actor/Critic Architecture**: `onpolicy/algorithms/r_mappo/algorithm/r_actor_critic.py`
@@ -140,7 +157,7 @@ The key insight: RIMs learn to specialize on different environmental factors, le
 The baseline GRU processes sequences while properly handling episode boundaries through masking, unlike RIMs which add attention-based specialization and communication.
 
 
-## 4. How can I add additional parameters?
+## 5. How can I add additional parameters?
 
 - **Configuration File**: `onpolicy/config.py`
 
@@ -167,19 +184,3 @@ After adding the parameter, access it anywhere in your code using:
 ```python
 all_args.your_parameter_name
 ```
-
-## 6. How can I modify the architecture of the Actor and the Critic?
-
-There are 4 key components to the architecture: 
-
-### 1. **r_mappo.py** - Training Algorithm
-Implements the PPO training algorithm with loss computation, gradient updates, and entropy annealing. Controls the entire training loop and optimization process.
-
-### 2. **rMAPPOPolicy.py** - Policy Interface  
-Wraps the actor and critic networks, manages their optimizers, and provides unified methods for action selection and evaluation. Acts as the bridge between training and networks.
-
-### 3. **r_actor_critic.py** - Network Architectures
-Contains the actual neural network definitions for both actor and critic, including base feature extractors, attention mechanisms (RIM/SCOFF), and output layers.
-
-### 4. **rnn.py / rim_cell.py** - Recurrent/Attention Modules
-Implements the core computational units (GRU/LSTM in rnn.py or RIM attention mechanisms in rim_cell.py) that process sequential information within the actor and critic networks.
